@@ -3,7 +3,7 @@ import { galleryItems } from "./gallery-items.js";
 console.log(galleryItems);
 
 const imageUrl = document.querySelector(".gallery");
-
+let lightbox;
 function getGallery(img) {
   return img
     .map(
@@ -35,15 +35,25 @@ function imageClick(evt) {
   }
 
   const imgSource = evt.target.dataset.source;
-  const inst = basicLightbox.create(`
+  lightbox = createLightbox(imgSource);
+  lightbox.show();
+  imageUrl.addEventListener("keydown", addHandleKeyDownListener);
+}
+
+function createLightbox(imgSource) {
+  return new SimpleLightbox(`
     <img src="${imgSource}" width="1280" height="855">
   `);
+}
 
-  inst.show();
+function addHandleKeyDownListener(evt) {
+  imageUrl.addEventListener("keydown", createLightbox);
+  lightbox.show();
+}
 
-  imageUrl.addEventListener("keydown", (esc) => {
-    if (esc.code === "Escape") {
-      inst.close();
-    }
-  });
+function removeHandleKeyDownImage(evt) {
+  if (evt.code === "Escape") {
+    lightbox.close();
+    imageUrl.removeEventListener("keydown", createLightbox);
+  }
 }
