@@ -3,7 +3,8 @@ import { galleryItems } from "./gallery-items.js";
 console.log(galleryItems);
 
 const imageUrl = document.querySelector(".gallery");
-let lightbox;
+let modal;
+
 function getGallery(img) {
   return img
     .map(
@@ -35,25 +36,16 @@ function imageClick(evt) {
   }
 
   const imgSource = evt.target.dataset.source;
-  lightbox = createLightbox(imgSource);
-  lightbox.show();
-  imageUrl.addEventListener("keydown", addHandleKeyDownListener);
+
+  const modal = basicLightbox.create(`
+    <img src="${imgSource}" width="800" height="880">
+`);
+  modal.show();
+  document.addEventListener("keydown", removeKeyDownImage);
 }
 
-function createLightbox(imgSource) {
-  return new SimpleLightbox(`
-    <img src="${imgSource}" width="1280" height="855">
-  `);
-}
-
-function addHandleKeyDownListener(evt) {
-  imageUrl.addEventListener("keydown", createLightbox);
-  lightbox.show();
-}
-
-function removeHandleKeyDownImage(evt) {
-  if (evt.code === "Escape") {
-    lightbox.close();
-    imageUrl.removeEventListener("keydown", createLightbox);
-  }
+function removeKeyDownImage(evt) {
+  if (evt.code !== "Escape") return;
+  modal.close();
+  document.removeEventListener("keydown", removeKeyDownImage);
 }
